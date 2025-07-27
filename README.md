@@ -90,21 +90,6 @@ summary_images/
 
 ---
 
-## 📌 To Do
-
-* [ ] Add Google Drive / PDF import
-* [ ] Add multiple-choice question types
-* [ ] Improve result analytics with charts
-* [ ] Deploy online (Heroku/Vercel/Docker)
-
----
-
-## 🤝 Contributing
-
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
-
----
-
 ## 📧 Contact
 
 Developed by [Ahmad Ashraf](mailto:ahmadashrafglal@gmail.com)
