@@ -1,0 +1,186 @@
+{% extends "index.html" %}
+{% block title %}Upload New Image{% endblock title %}
+{% block head_title %}Upload Your Image{% endblock head_title %}
+{% block content %}
+<!-- Loading Overlay -->
+<div id="loading-overlay" class="hidden fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center flex-col text-white">
+  <div class="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin mb-4"></div>
+  <p id="loading-message" class="text-xl font-semibold">Preparing...</p>
+</div>
+
+
+    <!-- Dashboard Content -->
+    <main class="w-full max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg mt-10">
+        <h2 class="text-2xl font-bold mb-6 text-gray-800">Upload Image</h2>
+
+        <form id="upload-form" enctype="multipart/form-data" class="space-y-6 bg-white p-6 rounded-xl shadow-md" method="post" action="{% url 'upload_submit' %}">
+            {% csrf_token %}
+            <!-- Upload Type -->
+            <div>
+                <label for="upload-type" class="block text-sm font-semibold text-gray-800 mb-2">Upload To</label>
+                <select id="upload-type" name="upload-type"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-violet-500 focus:border-violet-500 text-sm" required>
+                    <option value="">Select an option</option>
+                    <option value="existing">Existing Summary Card</option>
+                    <option value="new">New Summary Card</option>
+                </select>
+            </div>
+
+            <!-- Image Upload -->
+            <div>
+                <label for="image" class="block text-sm font-semibold text-gray-800 mb-2">Choose Image</label>
+                <input type="file" id="image" name="image" accept="image/*"
+                    class="block w-full text-sm file:mr-4 file:py-2 file:px-4
+                            file:rounded-lg file:border-0 file:bg-violet-100 file:text-violet-800
+                            hover:file:bg-violet-200 border border-gray-300 rounded-lg"required/>
+                <div id="preview" class="mt-4 hidden">
+                    <img id="preview-img" src="#" alt="Preview"
+                        class="w-full max-h-64 object-contain rounded border border-gray-200 mt-2"/>
+                </div>
+            </div>
+
+            <!-- Summary Title -->
+            <div>
+                <label for="summary-title" class="block text-sm font-semibold text-gray-800 mb-2">Summary Title</label>
+                <input type="text" id="summary-title" name="summary-title"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-violet-500 focus:border-violet-500 text-sm"
+                    placeholder="Enter summary title" required>
+            </div>
+
+
+            <!-- Existing Card -->
+            <div id="existing-card-section" class="hidden">
+                <label for="summary-card" class="block text-sm font-semibold text-gray-800 mb-2">Select Existing Card</label>
+                <select id="summary-card" name="summary-card"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-violet-500 focus:border-violet-500 text-sm" required>
+                    <option value="">Choose a card</option>
+                    {% for card in existing_cards %}
+                        <option value="{{ card.id }}">{{ card.title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- New Card Section -->
+            <div id="new-card-section" class="hidden space-y-4">
+                <div>
+                    <label for="new-card-title" class="block text-sm font-semibold text-gray-800 mb-2">New Card Title</label>
+                    <input type="text" id="new-card-title" name="new-card-title"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-violet-500 focus:border-violet-500 text-sm"
+                        placeholder="Enter new card title" required>
+                </div>
+                <div>
+                    <label for="new-card-description" class="block text-sm font-semibold text-gray-800 mb-2">New Card Description</label>
+                    <textarea id="new-card-description" name="new-card-description" rows="3"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-violet-500 focus:border-violet-500 text-sm"
+                            placeholder="Enter description for the new card..." required></textarea>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div>
+                <button type="submit" class="w-full py-2 px-4 bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium rounded-lg shadow-md transition-all">
+                    Upload
+                </button>
+            </div>
+
+        </form>
+
+
+    </main>
+
+    <script>
+        const imageInput = document.getElementById('image');
+        const previewDiv = document.getElementById('preview');
+        const previewImg = document.getElementById('preview-img');
+
+        imageInput.addEventListener('change', function () {
+            const file = this.files[0];
+            if (file) {
+            previewDiv.classList.remove('hidden');
+            previewImg.src = URL.createObjectURL(file);
+            }
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+        const uploadType = document.getElementById("upload-type");
+        const existingCardSection = document.getElementById("existing-card-section");
+        const newCardSection = document.getElementById("new-card-section");
+
+        uploadType.addEventListener("change", function () {
+            if (uploadType.value === "existing") {
+                existingCardSection.classList.remove("hidden");
+                newCardSection.classList.add("hidden");
+            } else if (uploadType.value === "new") {
+                existingCardSection.classList.add("hidden");
+                newCardSection.classList.remove("hidden");
+            } else {
+                existingCardSection.classList.add("hidden");
+                newCardSection.classList.add("hidden");
+            }
+        });
+        });
+
+    </script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const uploadType = document.getElementById("upload-type");
+
+        const existingCardSection = document.getElementById("existing-card-section");
+        const newCardSection = document.getElementById("new-card-section");
+
+        const summaryCardInput = document.getElementById("summary-card");
+        const newCardTitleInput = document.getElementById("new-card-title");
+        const newCardDescriptionInput = document.getElementById("new-card-description");
+
+        function updateRequiredFields() {
+            if (uploadType.value === "existing") {
+                existingCardSection.classList.remove("hidden");
+                newCardSection.classList.add("hidden");
+
+                summaryCardInput.required = true;
+                newCardTitleInput.required = false;
+                newCardDescriptionInput.required = false;
+            } else if (uploadType.value === "new") {
+                existingCardSection.classList.add("hidden");
+                newCardSection.classList.remove("hidden");
+
+                summaryCardInput.required = false;
+                newCardTitleInput.required = true;
+                newCardDescriptionInput.required = true;
+            } else {
+                existingCardSection.classList.add("hidden");
+                newCardSection.classList.add("hidden");
+
+                summaryCardInput.required = false;
+                newCardTitleInput.required = false;
+                newCardDescriptionInput.required = false;
+            }
+        }
+
+        updateRequiredFields();
+
+        uploadType.addEventListener("change", updateRequiredFields);
+    });
+</script>
+<script>
+document.getElementById('upload-form').addEventListener('submit', function () {
+  const overlay = document.getElementById('loading-overlay');
+  const message = document.getElementById('loading-message');
+
+  overlay.classList.remove('hidden');
+  message.textContent = "📤 Uploading your image...";
+
+  setTimeout(() => {
+    message.textContent = "🧠 Summarizing it...";
+  }, 5000);
+
+  setTimeout(() => {
+    message.textContent = "✅ Finishing up...";
+  }, 10000);
+
+});
+</script>
+
+
+
+{% endblock content %}

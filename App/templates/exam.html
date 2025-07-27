@@ -1,0 +1,174 @@
+{% extends "index.html" %}
+{% block title %}{{exam}}{% endblock title %}
+{% block head_title %}Exams Page{% endblock head_title %}
+{% block content %}
+            <!-- Quiz Content (Hidden by default) -->
+            <main id="quiz-content" class="flex-1 p-6 bg-gray-50">
+                <div class="max-w-4xl mx-auto">
+                    <!-- Quiz Header -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h2 class="text-2xl font-bold text-gray-900">{{exam.summary.title}}</h2>
+                            </div>
+                        </div>
+                        
+                        <!-- Progress Bar -->
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div id="quiz-progress" class="bg-purple-500 h-2 rounded-full progress-bar" style="width: 50%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Quiz Question Card -->
+                    <div class="bg-white rounded-xl shadow-sm p-8 quiz-container">
+                        <div class="mb-6">
+                            <p class="text-lg text-gray-900 font-semibold leading-relaxed mb-4" id="question-text">
+                                The Indian Contract Act 1872 came into force on... The Indian Contract Act 1872 came into force on...
+                            </p>
+                        </div>
+
+                        <!-- Answer Options -->
+                        <div class="space-y-4 mb-8" id="answer-options">
+                            <label class="flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                <input type="radio" name="answer" value="1" class="mr-4 text-purple-600">
+                                <span class="text-gray-700">Option A</span>
+                            </label>
+                            
+                            <label class="flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                <input type="radio" name="answer" value="2" class="mr-4 text-purple-600">
+                                <span class="text-gray-700">Option B</span>
+                            </label>
+                            
+                            <label class="flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                <input type="radio" name="answer" value="3" class="mr-4 text-purple-600">
+                                <span class="text-gray-700">Option C</span>
+                            </label>
+                            
+                            <label class="flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                <input type="radio" name="answer" value="4" class="mr-4 text-purple-600">
+                                <span class="text-gray-700">Option D</span>
+                            </label>
+                        </div>
+
+                        <!-- Navigation Buttons -->
+                        <div class="flex justify-between items-center">
+                            <button onclick="previousQuestion()" class="flex items-center space-x-2 px-6 py-3 text-gray-600 hover:text-gray-800 transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                </svg>
+                                <span>Previous</span>
+                            </button>
+                            
+                            <div class="flex space-x-3">
+                                <button onclick="nextQuestion()" class="flex items-center space-x-2 px-6 py-3 text-gray-600 hover:text-gray-800 transition-colors">
+                                    <span>Next</span>
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </button>
+                                
+                                <button onclick="finishQuiz()" class="px-8 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+                                    Finish
+                                </button>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            
+<input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
+<script>
+let currentQuestionIndex = 0;
+const answers = {};
+
+const questions = {{ questions_json|safe }};
+
+function loadQuestion() {
+    console.log(answers);
+    const question = questions[currentQuestionIndex];
+    document.getElementById('question-text').textContent = question.question;
+
+    const optionsContainer = document.getElementById('answer-options');
+    optionsContainer.innerHTML = '';
+
+    question.options.forEach((option, index) => {
+        const value = index + 1;
+        const isChecked = answers[currentQuestionIndex] == value ? 'checked' : '';
+
+        optionsContainer.innerHTML += `
+            <label class="flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                <input type="radio" name="answer" value="${value}" class="mr-4 text-purple-600" ${isChecked} onchange="saveAnswer('${value}')">
+                <span class="text-gray-700">${option}</span>
+            </label>
+        `;
+    });
+
+    const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+    document.getElementById('quiz-progress').style.width = progress + '%';
+}
+
+function saveAnswer(value) {
+    answers[currentQuestionIndex] = value;
+}
+
+function nextQuestion() {
+    if (currentQuestionIndex < questions.length - 1) {
+        currentQuestionIndex++;
+        loadQuestion();
+    }
+}
+
+function previousQuestion() {
+    if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        loadQuestion();
+    }
+}
+
+function getCSRFToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]').value;
+}
+
+function finishQuiz() {
+    const csrfToken = getCSRFToken();
+
+    fetch(`/submit_exam/{{exam.id}}`, {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrfToken
+    },
+    body: JSON.stringify(answers)
+})
+.then(response => {
+    console.log("HTTP status:", response.status);
+    if (!response.ok) {
+        throw new Error("Something went wrong");
+    }
+    return response.json();
+})
+.then(data => {
+    console.log("تم تسليم الامتحان:", data);
+    if (data.redirect_url) {
+        window.location.href = data.redirect_url; 
+    }
+})
+
+.catch(error => {
+    console.error("خطأ أثناء إرسال البيانات:", error);
+});
+
+}
+
+
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    loadQuestion();
+});
+</script>
+
+
+{% endblock content %}

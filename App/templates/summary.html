@@ -1,0 +1,127 @@
+{% extends "index.html" %}
+{% block title %}Summary | {{summary_card.title}}{% endblock title %}
+{% block menu %}
+<ul class="menu bg-base-200 rounded-box w-56">
+  <li><strong>{{summary_card.title}}</strong></li>
+  <li>
+    <ul>
+        {% for summary in summaries %}
+            <li class="ml-4"><a href="#summary-{{summary.id}}">{{ summary.title }}</a></li>
+        {% endfor %}
+    </ul>
+  </li>
+</ul>
+<style>
+html {
+  scroll-behavior: smooth;
+}
+</style>
+
+{% endblock menu %}
+
+{% block content %}
+<!-- Loading Overlay -->
+<div id="loading-overlay" class="hidden fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center flex-col text-white">
+  <div class="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin mb-4"></div>
+  <p id="loading-message" class="text-xl font-semibold">Creating your Exam...</p>
+</div>
+
+
+            <main id="summaries-content" class="flex-1 p-6 bg-gray-50">
+                <div class="max-w-6xl mx-auto">
+                    <!-- Summaries Header -->
+                    <div class="mb-8">
+                        <h2 class="text-3xl font-bold text-gray-900 mb-2">{{summary_card.title}}</h2>
+                    </div>
+                    {% for summary in summaries %}
+                    <!-- Summaries Grid -->
+                    <div id="summary-{{summary.id}}" class="grid grid-cols-1 lg:grid-cols-3 gap-6" style="margin-top:10px">
+                        <!-- Summaries img -->
+                        <div class="lg:col-span-1">
+                            <div class="bg-white rounded-xl shadow-sm p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Summary Uploaded Image</h3>
+                                <div class="space-y-3">
+                                    <img src="{{summary.img.url}}" alt="Summary Image" class="w-full h-auto rounded-lg shadow-sm">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Summary Display -->
+                        <div class="lg:col-span-2">
+                            <div class="bg-white rounded-xl shadow-sm">
+                                <!-- Summary Header -->
+                                <div class="p-6 border-b border-gray-200">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h3 id="summary-title" class="text-xl font-bold text-gray-900">{{summary.title}}</h3>
+                                            <p id="summary-meta" class="text-gray-500 mt-1">
+                                                <span class="font-bold">Created at:</span> {{ summary.created_at }}
+                                            </p>
+                                        </div>
+                                        {% comment %} share button {% endcomment %}
+                                         <!-- Share Button -->
+                                        <button onclick="copyShareLink('{{summary.share_token}}')" style="margin-right: -200px;"
+                                                class="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                    d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1">
+                                                </path>
+                                            </svg>
+                                            <span>Share</span>
+                                        </button>
+                                        <div class="flex items-center space-x-2">
+                                            <form class="generate-exam-form" id="generate_exam_form" method="POST" action="{% url 'generate_exam_view' summary.id %}">
+                                                {% csrf_token %}
+                                                <button type="submit" class="px-4 py-2 {% if summary.is_has_exam %}bg-green-600 hover:bg-green-700{% else %}bg-purple-600 hover:bg-purple-700{% endif %}  text-white rounded-lg  transition-colors">
+                                                    {% if summary.is_has_exam %}See Quiz Results{% else %}Generate Quiz{% endif %} 
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Summary Content -->
+                                <div class="p-6">
+                                    <div id="summary-content" class="prose max-w-none">
+                                        {{summary.summary|safe}} 
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </main>
+
+<script>
+document.querySelectorAll('.generate-exam-form').forEach(form => {
+  form.addEventListener('submit', function () {
+    const overlay = document.getElementById('loading-overlay');
+    const message = document.getElementById('loading-message');
+
+    overlay.classList.remove('hidden');
+    message.textContent = "🔄 Creating your exam...";
+
+    setTimeout(() => {
+      message.textContent = "✅ Finishing up...";
+    }, 5000);
+
+    setTimeout(() => {
+      message.textContent = "🔄 Redirecting...";
+    }, 10000);
+  });
+});
+
+function copyShareLink(shareToken) {
+  const shareLink = `http://127.0.0.1:8000/share/${shareToken}`;
+  navigator.clipboard.writeText(shareLink).then(() => {
+    alert('Share link copied to clipboard: ' + shareLink);
+  }).catch(err => {
+    console.error('Failed to copy: ', err);
+    alert('Failed to copy share link.');
+  });
+}
+
+</script>
+
+{% endblock content %}

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Shared Summary - Study Mate</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .gradient-bg {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .summary-card {
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .summary-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    }
+    .floating-action {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 50;
+    }
+    .highlight-text {
+      background: linear-gradient(120deg, #a78bfa 0%, #ec4899 100%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .pulse-animation {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .fade-in-up {
+      animation: fadeInUp 0.6s ease-out;
+    }
+    .topic-tag {
+      transition: all 0.3s ease;
+    }
+    .topic-tag:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br min-h-screen bg-gray-100">
+  <!-- Header -->
+  <header class="bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-200 sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-6 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+          <div class="w-12 h-12 gradient-bg rounded-xl flex items-center justify-center shadow-lg">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900">Study Mate</h1>
+            <p class="text-sm text-gray-600">Shared Study Summary</p>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-4">
+          <a href="index.html" class="flex items-center space-x-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"/>
+            </svg>
+            <span>Create Your Own</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-6xl mx-auto px-6 py-8 ">
+    <!-- Summary Header -->
+    <div class="text-center fade-in-up">
+      <div class="inline-flex items-center space-x-2 bg-white/60 backdrop-blur-sm px-4 py-2 rounded-full text-purple-600 font-medium mb-4 shadow-sm">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+        </svg>
+        <span>Shared by {{summary.summary_card.student}}</span>
+      </div>
+    </div>
+
+  </main>
+
+
+  <main id="summaries-content" class="flex-1">
+                <div class="max-w-6xl mx-auto">
+                    <!-- Summaries Grid -->
+                    <div id="summary-{{summary.id}}" class="grid grid-cols-1 lg:grid-cols-3 gap-6" style="margin-top:10px">
+                        <!-- Summaries img -->
+                        <div class="lg:col-span-1">
+                            <div class="bg-white rounded-xl shadow-sm p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Summary Uploaded Image</h3>
+                                <div class="space-y-3">
+                                    <img src="{{summary.img.url}}" alt="Summary Image" class="w-full h-auto rounded-lg shadow-sm">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Summary Display -->
+                        <div class="lg:col-span-2">
+                            <div class="bg-white rounded-xl shadow-sm">
+                                <!-- Summary Header -->
+                                <div class="p-6 border-b border-gray-200">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h3 id="summary-title" class="text-xl font-bold text-gray-900">{{summary.title}}</h3>
+                                            <p id="summary-meta" class="text-gray-500 mt-1">
+                                                <span class="font-bold">Created at:</span> {{ summary.created_at }}
+                                            </p>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <form class="generate-exam-form" id="generate_exam_form" method="POST" action="{% url 'generate_exam_view' summary.id %}">
+                                                {% csrf_token %}
+                                                <button type="submit" class="px-4 py-2 {% if summary.is_has_exam %}bg-green-600 hover:bg-green-700{% else %}bg-purple-600 hover:bg-purple-700{% endif %}  text-white rounded-lg  transition-colors">
+                                                    {% if summary.is_has_exam %}See Exam Results{% else %}Generate Quiz{% endif %} 
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Summary Content -->
+                                <div class="p-6">
+                                    <div id="summary-content" class="prose max-w-none">
+                                        {{summary.summary|safe}} 
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+</body>
+</html>

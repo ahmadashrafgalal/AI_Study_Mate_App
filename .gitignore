@@ -1,0 +1,47 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django migrations
+**/migrations/
+**/migrations/*.pyc
+**/migrations/*.py
+
+# SQLite database
+db.sqlite3
+
+# Media folders
+profile_images/
+summary_images/
+
+# Static files
+staticfiles/
+static/
+
+# VSCode settings
+.vscode/
+
+# Environment
+.env
+*.env
+venv/
+env/
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Tests
+.coverage
+htmlcov/
+*.cover
+.tox/
+.nox/
+coverage.xml
+
+# Pytest
+.pytest_cache/

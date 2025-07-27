@@ -1,0 +1,137 @@
+{% extends "index.html" %}
+{% block title %}Results{% endblock title %}
+{% block head_title %}Your Results{% endblock head_title %} 
+{% block content %}
+
+            <!-- Results Content (Hidden by default) -->
+            <main id="results-content" class="flex-1 p-6 bg-gray-50">
+                <div class="max-w-7xl mx-auto">
+                    <!-- Results Header -->
+                    <div class="mb-8">
+                        <div>
+                            <div>
+                                <h2 class="text-3xl font-bold text-gray-900 mb-2">Exam Results</h2>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stats Overview -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                        <div class="bg-white rounded-xl shadow-sm p-6">
+                            <div class="flex items-center">
+                                <div class="p-2 bg-green-100 rounded-lg">
+                                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">Total Quizzes</p>
+                                    <p class="text-2xl font-bold text-gray-900">{{total_quizzes}}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-sm p-6">
+                            <div class="flex items-center">
+                                <div class="p-2 bg-blue-100 rounded-lg">
+                                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                    </svg>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">Average Score</p>
+                                    <p class="text-2xl font-bold text-gray-900">{{average_score}}%</p>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="bg-white rounded-xl shadow-sm p-6">
+                            <div class="flex items-center">
+                                <div class="p-2 bg-purple-100 rounded-lg">
+                                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">Best Score</p>
+                                    <p class="text-2xl font-bold text-gray-900">{{best_score}}%</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Results Table -->
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-900">Recent Quiz Results</h3>
+                        </div>
+                        
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quiz</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subject</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Questions</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+
+                                    {% for res in results %}
+                                        <tr onclick="viewQuizDetails('quiz-{{ forloop.counter }}')" class="hover:bg-gray-50 cursor-pointer transition-colors">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm font-medium text-gray-900">{{ res.exam }}</div>
+                                                <div class="text-sm text-gray-500">{{ res.exam.description|default:"" }}</div>
+                                            </td>
+                                            
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                    {{ res.exam.summary.summary_card|default:"" }}
+                                                </span>
+                                            </td>
+
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="flex items-center">
+                                                    <div class="text-sm font-medium text-gray-900">{{ res.score|floatformat:0 }}%</div>
+                                                    <div class="ml-2 flex-shrink-0">
+                                                        {% if res.score >= 90 %}
+                                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Excellent</span>
+                                                        {% elif res.score >= 80 %}
+                                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Good</span>
+                                                        {% elif res.score >= 70 %}
+                                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Average</span>
+                                                        {% else %}
+                                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">Needs Work</span>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </td>
+
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{res.questions}}</td>  {# ممكن تضيف correct/total لو عندك #}
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ res.date_taken|date:"M d, Y" }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                <button onclick="window.location.href='{% url 'results_view_exam' res.exam.id %}'" class="text-purple-600 hover:text-purple-900 mr-3">Review</button>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+
+
+
+                </div>
+
+             </div>
+
+
+
+
+{% endblock content %}

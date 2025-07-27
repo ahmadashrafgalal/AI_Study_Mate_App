@@ -1,0 +1,142 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/png" href="{% static "logo.png" %}">
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Dashboard{% endblock title %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-hover {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .progress-bar {
+            transition: width 0.3s ease;
+        }
+        .quiz-container {
+            min-height: 500px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Main Container -->
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        {% comment %} <div class="w-64 bg-white shadow-lg flex flex-col"> {% endcomment %}
+         <div class="w-64 h-screen bg-white shadow-lg flex flex-col fixed">
+
+            <!-- Logo -->
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 gradient-bg rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                        </svg>
+                    </div>
+                    <span class="text-xl font-bold text-gray-800">Study Mate</span>
+                </div>
+            </div>
+            
+            <!-- Navigation -->
+            <nav class="flex-1 p-4">
+                <div class="space-y-2">
+                    <button onclick="window.location.href='{% url "home" %}'" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-lg {% if request.resolver_match.url_name == 'home' %} bg-purple-50 text-purple-600{% endif %}  transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+                        </svg>
+                        <span>Dashboard</span>
+                    </button>
+                    
+                    <button onclick="window.location.href='{% url "upload_view" %}'" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 {% if request.resolver_match.url_name == 'upload_view' %} bg-purple-50 text-purple-600 {% endif %} rounded-lg text-gray-600 hover:bg-gray-50 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                        </svg>
+                        <span>Upload Paper</span>
+                    </button>
+
+                    <button onclick="window.location.href='{% url "results_view" %}'" id="results-btn" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors  {% if request.resolver_match.url_name == 'results_view' %} bg-purple-50 text-purple-600 {% endif %}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                        <span>Exam Results</span>
+                    </button>
+
+                    {% block menu %}{% endblock menu %}
+                </div>
+            </nav>
+            
+            <!-- Bottom Menu -->
+            <div class="p-4 border-t border-gray-200">
+                <div class="space-y-2">
+                    
+                    <button onclick="window.location.href='{% url "logout" %}'" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-white bg-red-600 hover:bg-red-700 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h6a2 2 0 012 2v1" />
+                        </svg>
+                        <span>Logout</span>
+                    </button>
+
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+         <div class="flex-1 flex flex-col ml-64">
+
+            <!-- Header -->
+            <header class="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">{% block head_title %}Your Dashboard{% endblock head_title %} </h1>
+                        <p class="text-gray-600">Welcome back, {{ request.user.username }}</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <img src="{{ request.user.student.profile_img.url }}" alt="Profile" class="w-12 h-12 rounded-full">
+                    </div>
+                </div>
+            </header>
+            
+{% block content %}
+            <!-- Dashboard Content -->
+            <main id="dashboard-content" class="flex-1 p-6 gradient-bg">
+                <!-- Mock Tests Section -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-xl font-semibold text-white">Your History</h2>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {% for card in summary_cards %}
+                            <div onclick="window.location.href='{% url "summary_view" card.id %}'" class="bg-white rounded-xl p-6 card-hover cursor-pointer" onclick="startQuiz()">
+                                <div class="text-center mb-4">
+                                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                    </div>
+                                    <h3 class="font-semibold text-gray-800">{{card.title}}</h3>
+                                    <p class="text-sm text-gray-500">{{card.description}}</p>
+                                </div>
+                                <span class="inline-block px-3 py-1 bg-green-100 text-green-600 text-xs rounded-full">{{card.created_at}}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </main>
+{% endblock content %}
+
+
+        </div>
+    </div>
+</body>
+</html>

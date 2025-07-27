@@ -1,0 +1,86 @@
+{% extends "index.html" %}
+{% block title %}Exam Answers Review{% endblock title %}
+{% block head_title %}Exam Answers Review{% endblock head_title %} 
+{% block content %}
+    <!-- Quiz Content -->
+    <main id="quiz-content" class="flex-1 p-6 bg-gray-50">
+        <div class="max-w-4xl mx-auto">
+            <!-- Review Section (Hidden by default) -->
+            <div id="review-section" class="">
+                <!-- Score Summary -->
+                <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+                    <div class="text-center">
+                        <h2 class="text-3xl font-bold text-gray-900 mb-2">Exam Complete!</h2>
+                        <div class="flex justify-center items-center space-x-8 mb-4">
+                            <div class="text-center">
+                                <div id="score-display" class="text-4xl font-bold text-purple-600">{{ result.score|floatformat:0 }}%</div>
+                                <div class="text-gray-600">Overall Score</div>
+                            </div>
+                            <div class="text-center">
+                                <div id="correct-count" class="text-2xl font-bold text-green-600">{{result.questions}}</div>
+                                <div class="text-gray-600">Correct Answers</div>
+                            </div>
+                        </div>
+                        <div class="flex justify-center space-x-4">
+                            <button onclick="window.location.href='{% url 'results_view' %}'" class="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+                                Go to All Results
+                            </button>
+                            <button onclick="window.location.href='{% url 'home' %}'" class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                                Back to Dashboard
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Review -->
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-6">Detailed Review</h3>
+                    <div id="review-questions" class="space-y-8">
+
+
+
+                        
+                        {% for question in questions %}
+                        <div class="border border-gray-200 rounded-lg p-6">
+                            <div class="flex items-start justify-between mb-4">
+                                <h4 class="text-lg font-semibold text-gray-900">{{question.question_text}}</h4>
+                                {% if question.user_answer == question.correct_option %}<span class="text-green-600 text-xl font-bold">✓</span>{% else %}<span class="text-red-600 text-xl font-bold">✗</span>{% endif %}
+
+                            </div>
+
+                            <div class="space-y-2 mb-4">
+                                <div class="flex items-center p-3 border {% if question.correct_option == '1' %}border-green-500 bg-green-50 {% else %} border-gray-200 bg-gray-50 {% endif %} rounded-lg {% if question.user_answer != question.correct_option and question.user_answer == '1' %}border-red-500 bg-red-50 {% endif %}">
+                                    <span class="font-medium text-gray-700 mr-3">A.</span>
+                                    <span class="text-gray-700">{{question.option_1}}</span>
+                                </div>
+
+                                <div class="flex items-center p-3 border {% if question.correct_option == '2' %}border-green-500 bg-green-50 {% else %} border-gray-200 bg-gray-50 {% endif %}  rounded-lg {% if question.user_answer != question.correct_option and question.user_answer == '2' %}border-red-500 bg-red-50 {% endif %}">
+                                    <span class="font-medium text-gray-700 mr-3">B.</span>
+                                    <span class="text-gray-700">{{question.option_2}}</span>
+                                </div>
+
+                                <div class="flex items-center p-3 border {% if question.correct_option == '3' %}border-green-500 bg-green-50 {% else %} border-gray-200 bg-gray-50 {% endif %} rounded-lg {% if question.user_answer != question.correct_option and question.user_answer == '3' %}border-red-500 bg-red-50 {% endif %}">
+                                    <span class="font-medium text-gray-700 mr-3">C.</span>
+                                    <span class="text-gray-700">{{question.option_3}}</span>
+                                </div>
+
+                                <div class="flex items-center p-3 border {% if question.correct_option == '4' %}border-green-500 bg-green-50 {% else %} border-gray-200 bg-gray-50 {% endif %} rounded-lg {% if question.user_answer != question.correct_option and question.user_answer == '4' %}border-red-500 bg-red-50 {% endif %}">
+                                    <span class="font-medium text-gray-700 mr-3">D.</span>
+                                    <span class="text-gray-700">{{question.option_4}}</span>
+                                </div>
+                            </div>
+
+                        </div>
+                        {% endfor %}
+
+
+
+{% comment %} border-red-500 bg-red-50 {% endcomment %}
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock content %}
